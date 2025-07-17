@@ -43,7 +43,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3033', 'http://ww8coo8coso4ck44ck8gsoow.31.97.166.190.sslip.io'],
+  origin: ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:3033', 'http://ww8coo8coso4ck44ck8gsoow.31.97.166.190.sslip.io', 'http://lgowcsgc8ggockog088kowws.31.97.166.190.sslip.io'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Authorization', 'Range', 'Accept'],

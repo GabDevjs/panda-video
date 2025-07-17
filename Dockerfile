@@ -47,11 +47,11 @@ RUN mkdir -p uploads processed && \
 USER nodejs
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3033
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
+    CMD curl -f http://localhost:3033/health || exit 1
 
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]

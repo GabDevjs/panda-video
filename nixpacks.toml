@@ -1,0 +1,15 @@
+[variables]
+NODE_ENV = "production"
+
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm-9_x", "ffmpeg"]
+aptPkgs = ["curl", "wget", "dumb-init"]
+
+[phases.install]
+cmd = "npm ci"
+
+[phases.build]
+cmd = "mkdir -p uploads processed"
+
+[start]
+cmd = "dumb-init -- npm start"

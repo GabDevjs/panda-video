@@ -32,7 +32,7 @@ const calcularFaturamentoo = async (videoId, durationInSeconds) => {
     await Billing.create({
       user_id: userId,
       video_id: videoId,
-      minutes_processed: roundedMinutes,
+      seconds_processed: exactDurationInSeconds,
       amount: amount
     });
 

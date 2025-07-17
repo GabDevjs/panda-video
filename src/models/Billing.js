@@ -25,21 +25,24 @@ export default (sequelize) => {
       },
       onDelete: 'CASCADE'
     },
-    minutes_processed: {
-      type: DataTypes.DECIMAL(10, 2),
+    seconds_processed: {
+      type: DataTypes.DECIMAL(15, 6),
       allowNull: false,
-      comment: 'Duração processada em minutos arredondados para cima'
+      comment: 'Duração processada em segundos'
     },
     amount: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(15, 8),
       allowNull: false,
       comment: 'Valor cobrado em dólares'
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     tableName: 'billing',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: false,
+    timestamps: false,
     indexes: [
       {
         fields: ['user_id']

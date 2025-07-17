@@ -7,14 +7,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev dependencies)
-RUN npm ci --include=dev && npm cache clean --force
+# Install only production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy source code
 COPY . .
-
-# Remove development dependencies and clean cache
-RUN npm prune --production && npm cache clean --force
 
 # Production stage - APP
 FROM node:18-alpine AS production

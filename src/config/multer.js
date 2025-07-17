@@ -32,8 +32,12 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 500 * 1024 * 1024, 
-  }
+    fileSize: parseInt(process.env.MAX_FILE_SIZE) || 2 * 1024 * 1024 * 1024, // 2GB padrão (aumentado de 500MB)
+    files: 2, // Máximo 2 arquivos (vídeo + thumbnail)
+    fieldSize: 10 * 1024 * 1024, // 10MB para campos
+  },
+  // Configurações de timeout para uploads grandes
+  timeout: 30 * 60 * 1000, // 30 minutos
 });
 
 export default upload;

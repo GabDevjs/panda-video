@@ -245,11 +245,22 @@ const obterInformacoesVideo = (inputPath) => {
 };
 
 const obterResolucaoDisponivel = (originalWidth, originalHeight) => {
-  
-  const targetResolution = { width: 640, height: 360, name: '360p', bitrate: '800k', maxrate: '1200k' };
-  
-  
-  if (originalWidth < targetResolution.width || originalHeight < targetResolution.height) {
+  // Definir todas as resoluções possíveis em ordem decrescente
+  const allResolutions = [
+    { width: 1920, height: 1080, name: '1080p', bitrate: '5000k', maxrate: '7500k' },
+    { width: 1280, height: 720, name: '720p', bitrate: '2500k', maxrate: '3750k' },
+    { width: 854, height: 480, name: '480p', bitrate: '1200k', maxrate: '1800k' },
+    { width: 640, height: 360, name: '360p', bitrate: '800k', maxrate: '1200k' },
+    { width: 426, height: 240, name: '240p', bitrate: '400k', maxrate: '600k' }
+  ];
+
+  // Filtrar resoluções que são menores ou iguais ao vídeo original
+  const availableResolutions = allResolutions.filter(resolution => 
+    resolution.width <= originalWidth && resolution.height <= originalHeight
+  );
+
+  // Se nenhuma resolução padrão se adequa, usar a resolução original
+  if (availableResolutions.length === 0) {
     return [{
       width: originalWidth,
       height: originalHeight,
@@ -258,9 +269,11 @@ const obterResolucaoDisponivel = (originalWidth, originalHeight) => {
       maxrate: '1200k'
     }];
   }
-  
-  
-  return [targetResolution];
+
+  console.log(`📺 Resoluções disponíveis para ${originalWidth}x${originalHeight}:`, 
+    availableResolutions.map(r => `${r.width}x${r.height} (${r.name})`));
+
+  return availableResolutions;
 };
 
 const gerarMiniaturia = (inputPath, outputDir, duration) => {

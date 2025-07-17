@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -50,8 +51,16 @@ app.use(cors({
   exposedHeaders: ['Content-Range', 'Content-Length', 'Accept-Ranges']
 }));
 app.use(morgan('combined'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Configurar timeouts mais altos para uploads grandes
+app.use((req, res, next) => {
+  // Timeout de 30 minutos para uploads de vídeo
+  if (req.path.includes('/upload')) {
+    req.setTimeout(30 * 60 * 1000); // 30 minutos
+    res.setTimeout(30 * 60 * 1000); // 30 minutos
+  }
+  next();
+});
 
 
 const uploadDir = process.env.UPLOAD_PATH || './uploads';
@@ -346,8 +355,18 @@ app.use((error, req, res, next) => {
   
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ error: 'Arquivo muito grande' });
+      return res.status(400).json({ error: 'Arquivo muito grande. Máximo permitido: 2GB' });
     }
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ error: 'Muitos arquivos enviados' });
+    }
+  }
+  
+  // Tratar timeout de requisição
+  if (error.code === 'TIMEOUT' || error.message.includes('timeout')) {
+    return res.status(408).json({ 
+      error: 'Timeout na requisição. Arquivo muito grande ou conexão lenta.' 
+    });
   }
   
   res.status(500).json({ error: 'Erro interno do servidor' });
@@ -361,7 +380,12 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Health check disponível em http://localhost:${PORT}/health`);
 });
+
+// Configurar timeout do servidor para 30 minutos para uploads grandes
+server.timeout = 30 * 60 * 1000; // 30 minutos
+server.keepAliveTimeout = 30 * 60 * 1000; // 30 minutos
+server.headersTimeout = 30 * 60 * 1000 + 1000; // 30 minutos + 1 segundo

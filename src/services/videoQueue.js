@@ -2,12 +2,18 @@ import Queue from 'bull';
 import { processVideoToHLS } from './videoProcessor.js';
 import db from '../models/index.js';
 
+redisPassword = process.env.REDIS_PASSWORD;
 
 const redisConfig = {
-  host: process.env.REDIS_HOST || (process.env.NODE_ENV === 'production' ? 'redis' : 'localhost'),
-  port: parseInt(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
-  tls: process.env.REDIS_TLS === 'true' ? true : false,
+  host: redisHost,
+  port: redisPort,
+  password: redisPassword,
+  retryDelayOnFailover: 100,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+  connectTimeout: 10000,
+  commandTimeout: 5000,
+  lazyConnect: true
 };
 
 
@@ -19,34 +25,34 @@ const videoQueue = new Queue('video processing', {
 videoQueue.process('process-video', 1, async (job) => {
   console.log(`🔥 PROCESSADOR CHAMADO! Job ID: ${job.id}`);
   const { videoId, videoPath, thumbnailPath } = job.data;
-
+  
   console.log(`🎬 Iniciando processamento do vídeo: ${videoId}`);
   console.log(`📁 Arquivo de vídeo: ${videoPath}`);
   console.log(`🖼️ Thumbnail: ${thumbnailPath}`);
-
+  
   try {
-
+    
     console.log(`🔄 Atualizando status para 'processing'...`);
     await updateVideoStatus(videoId, 'processing');
-
-
+    
+    
     console.log(`⚙️ Iniciando conversão HLS...`);
     await processVideoToHLS(videoId, videoPath, thumbnailPath);
-
-
+    
+    
     console.log(`✅ Conversão finalizada, atualizando status...`);
     await updateVideoStatus(videoId, 'completed');
-
+    
     console.log(`✅ Vídeo processado com sucesso: ${videoId}`);
-
+    
     return { success: true, videoId };
-
+    
   } catch (error) {
     console.error(`❌ Erro ao processar vídeo ${videoId}:`, error);
-
-
+    
+    
     await updateVideoStatus(videoId, 'failed');
-
+    
     throw error;
   }
 });
@@ -80,10 +86,10 @@ const addVideoToQueue = async (videoId, videoPath, thumbnailPath = null) => {
       removeOnComplete: 10,
       removeOnFail: 5
     });
-
+    
     console.log(`📋 Vídeo adicionado à fila: ${videoId} (Job ID: ${job.id})`);
     return job;
-
+    
   } catch (error) {
     console.error('Erro ao adicionar vídeo à fila:', error);
     throw error;
@@ -133,7 +139,7 @@ const getQueueStats = async () => {
   const active = await videoQueue.getActive();
   const completed = await videoQueue.getCompleted();
   const failed = await videoQueue.getFailed();
-
+  
   return {
     waiting: waiting.length,
     active: active.length,
@@ -146,37 +152,37 @@ const getQueueStats = async () => {
 const cleanQueue = async () => {
   try {
     console.log('🧹 Limpando fila...');
-
-
+    
+    
     await videoQueue.pause();
-
-
+    
+    
     const waiting = await videoQueue.getWaiting();
     const active = await videoQueue.getActive();
     const completed = await videoQueue.getCompleted();
     const failed = await videoQueue.getFailed();
-
+    
     console.log(`📊 Jobs encontrados - Waiting: ${waiting.length}, Active: ${active.length}, Completed: ${completed.length}, Failed: ${failed.length}`);
-
-
+    
+    
     for (const job of active) {
       await job.remove();
       console.log(`🗑️ Job ativo ${job.id} removido`);
     }
-
-
+    
+    
     for (const job of waiting) {
       await job.remove();
       console.log(`🗑️ Job aguardando ${job.id} removido`);
     }
-
-
+    
+    
     await videoQueue.clean(0, 'completed');
     await videoQueue.clean(0, 'failed');
-
-
+    
+    
     await videoQueue.resume();
-
+    
     console.log('✅ Fila limpa completamente');
   } catch (error) {
     console.error('❌ Erro ao limpar fila:', error);

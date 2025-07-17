@@ -4,7 +4,7 @@ import jobs from '../jobs/index.js';
 import Redis from 'ioredis';
 
 
-const redisHost = process.env.REDIS_HOST || (process.env.NODE_ENV === 'production' ? 'redis' : '127.0.0.1');
+const redisHost = process.env.REDIS_HOST || 'localhost';
 const redisPort = process.env.REDIS_PORT || 6379;
 const redisPassword = process.env.REDIS_PASSWORD;
 
@@ -14,12 +14,8 @@ const redisConfig = {
   password: redisPassword,
   retryDelayOnFailover: 100,
   maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-  connectTimeout: 10000,
-  commandTimeout: 5000,
-  lazyConnect: true
+  enableReadyCheck: false
 };
-
 
 const queues = Object.values(jobs).map((job) => {
   const queueName = job.key; 

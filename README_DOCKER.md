@@ -5,14 +5,14 @@
 O backend foi dividido em duas imagens Docker separadas:
 
 ### 1. **App Principal** (API)
-- **Dockerfile**: `Dockerfile.app`
+- **Dockerfile**: `Dockerfile-app`
 - **Comando**: `npm run start:app`
 - **Porta**: 3033
 - **Função**: Serve a API REST, rotas, autenticação e Bull Board dashboard
 - **Recursos**: Sem FFmpeg (mais leve)
 
 ### 2. **Worker** (Processamento de Filas)
-- **Dockerfile**: `Dockerfile.worker`  
+- **Dockerfile**: `Dockerfile-worker`  
 - **Comando**: `npm run start:worker`
 - **Função**: Processa filas de vídeo, conversão HLS
 - **Recursos**: Com FFmpeg para processamento de vídeo
@@ -22,7 +22,7 @@ O backend foi dividido em duas imagens Docker separadas:
 ### Serviço 1: API Principal
 ```yaml
 nome: panda-video-api
-dockerfile: Dockerfile.app
+dockerfile: Dockerfile-app
 porta: 3033
 variáveis:
   NODE_ENV: production
@@ -35,7 +35,7 @@ variáveis:
 ### Serviço 2: Worker
 ```yaml
 nome: panda-video-worker
-dockerfile: Dockerfile.worker
+dockerfile: Dockerfile-worker
 sem porta exposta
 variáveis:
   NODE_ENV: production

@@ -14,7 +14,10 @@ const redisConfig = {
   password: redisPassword,
   retryDelayOnFailover: 100,
   maxRetriesPerRequest: null,
-  enableReadyCheck: false
+  enableReadyCheck: false,
+  connectTimeout: 10000,
+  commandTimeout: 5000,
+  lazyConnect: true
 };
 
 

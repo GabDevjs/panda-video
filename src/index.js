@@ -362,8 +362,6 @@ app.use('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  
-  Queue.add('Ping', { message: 'Servidor iniciado' })
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Health check disponível em http://localhost:${PORT}/health`);
 });

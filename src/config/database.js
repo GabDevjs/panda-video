@@ -8,6 +8,9 @@ export default {
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
+    dialectOptions: {
+      connectTimeout: 10000
+    },
     logging: console.log,
     pool: {
       max: 20,
@@ -45,6 +48,9 @@ export default {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
+    dialectOptions: {
+      connectTimeout: 10000
+    },
     logging: false,
     pool: {
       max: 30,

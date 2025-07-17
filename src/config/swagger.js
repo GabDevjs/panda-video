@@ -73,7 +73,7 @@ Exemplos:
     ],
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' ? 'https://api.pandavideo.com' : 'http://localhost:3000',
+        url: process.env.NODE_ENV === 'production' ? 'https://api.pandavideo.com' : 'http://localhost:3033',
         description: process.env.NODE_ENV === 'production' ? 'Produção' : 'Desenvolvimento'
       }
     ],

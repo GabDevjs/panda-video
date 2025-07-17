@@ -4,7 +4,7 @@ import jobs from '../jobs/index.js';
 import Redis from 'ioredis';
 
 
-const redisHost = process.env.REDIS_HOST || 'localhost';
+const redisHost = process.env.REDIS_HOST || '127.0.0.1';
 const redisPort = process.env.REDIS_PORT || 6379;
 const redisPassword = process.env.REDIS_PASSWORD;
 

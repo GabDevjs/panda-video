@@ -74,20 +74,42 @@ const bullBoardPassword = process.env.BULL_BOARD_PASSWORD || 'password';
 
 
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const waitForService = async (serviceName, checkFunction, maxRetries = 30) => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      await checkFunction();
+      console.log(`✅ ${serviceName} conectado com sucesso`);
+      return;
+    } catch (error) {
+      console.log(`⏳ Aguardando ${serviceName}... (tentativa ${i + 1}/${maxRetries})`);
+      if (i === maxRetries - 1) {
+        throw new Error(`❌ ${serviceName} não disponível após ${maxRetries} tentativas`);
+      }
+      await sleep(2000); // Aguarda 2 segundos
+    }
+  }
+};
+
 const initializeServices = async () => {
   try {
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
-    }
+    // Aguardar Redis
+    await waitForService('Redis', async () => {
+      if (!redisClient.isOpen) {
+        await redisClient.connect();
+      }
+    });
     console.log('Connected to Redis');
     
-    await sequelize.authenticate();
+    // Aguardar PostgreSQL
+    await waitForService('PostgreSQL', async () => {
+      await sequelize.authenticate();
+    });
     console.log('Conexão com banco de dados estabelecida com sucesso.');
-    
     
     await sequelize.sync({ alter: false });
     console.log('Modelos sincronizados com o banco de dados.');
-    
     
     console.log('🔧 Configurando Bull Board Dashboard...');
     console.log(`📋 Filas disponíveis para Bull Board: ${Queue.queues.length}`);

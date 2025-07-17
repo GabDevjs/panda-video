@@ -5,7 +5,7 @@ export default {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME || 'panda_video',
-    host: process.env.DB_HOST || '127.0.0.1',
+    host: process.env.DB_HOST || (process.env.NODE_ENV === 'production' ? 'postgres' : '127.0.0.1'),
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
     dialectOptions: {
@@ -30,7 +30,7 @@ export default {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME_TEST || 'panda_video_test',
-    host: process.env.DB_HOST || '127.0.0.1',
+    host: process.env.DB_HOST || (process.env.NODE_ENV === 'production' ? 'postgres' : '127.0.0.1'),
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
     logging: false,
@@ -45,7 +45,7 @@ export default {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
+    host: process.env.DB_HOST || 'postgres',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
     dialectOptions: {

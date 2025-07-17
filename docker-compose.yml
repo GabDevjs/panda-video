@@ -35,7 +35,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3033:3033"
     environment:
       NODE_ENV: production
       DB_HOST: postgres
@@ -48,7 +48,7 @@ services:
       JWT_SECRET: panda_video_super_secret_jwt_key_2025
       JWT_EXPIRES_IN: 24h
       COST_PER_MINUTE: 0.50
-      PORT: 3000
+      PORT: 3033
       MAX_FILE_SIZE: 524288000
       UPLOAD_PATH: ./uploads
       PROCESSED_PATH: ./processed

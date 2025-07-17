@@ -1,0 +1,103 @@
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: panda_video
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d panda_video"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: panda_video
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: panda_video_super_secret_jwt_key_2025
+      JWT_EXPIRES_IN: 24h
+      COST_PER_MINUTE: 0.50
+      PORT: 3000
+      MAX_FILE_SIZE: 524288000
+      UPLOAD_PATH: ./uploads
+      PROCESSED_PATH: ./processed
+      BULL_BOARD_USER: admin
+      BULL_BOARD_PASSWORD: password
+      APP_NAME: panda-video
+    volumes:
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  queue-worker:
+    build: .
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: panda_video
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: panda_video_super_secret_jwt_key_2025
+      COST_PER_MINUTE: 0.50
+      UPLOAD_PATH: ./uploads
+      PROCESSED_PATH: ./processed
+      APP_NAME: panda-video
+    volumes:
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: ["npm", "run", "dev:queue"]
+
+volumes:
+  postgres_data:
+  redis_data:

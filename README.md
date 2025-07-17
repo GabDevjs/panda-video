@@ -23,8 +23,8 @@ Sistema de hospedagem e processamento de vídeos com conversão HLS, autenticaç
 
 1. Clone o repositório:
 ```bash
-git clone <repository-url>
-cd panda-video-backend
+git clone https://github.com/GabDevjs/panda-video
+cd panda-video
 ```
 
 2. Configure as variáveis de ambiente:
@@ -458,19 +458,3 @@ docker run -d \
 - Arredondamento para cima
 - Registro detalhado para auditoria
 - Consulta agregada por usuário
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
-## 📄 Licença
-
-MIT License - veja o arquivo LICENSE para detalhes.
-
-## 📞 Suporte
-
-Para dúvidas ou problemas, abra uma issue no repositório ou entre em contato com a equipe de desenvolvimento.

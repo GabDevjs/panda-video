@@ -124,7 +124,7 @@ services:
       db-setup:
         condition: service_completed_successfully
     restart: unless-stopped
-    command: ["npm", "run", "dev:queue"]
+    command: ["npm", "run", "start:worker"]
 
 volumes:
   postgres_data:

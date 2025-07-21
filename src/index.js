@@ -51,6 +51,7 @@ app.use(cors({
   exposedHeaders: ['Content-Range', 'Content-Length', 'Accept-Ranges']
 }));
 app.use(morgan('combined'));
+app.use(express.json());
 
 // Configurar timeouts mais altos para uploads grandes
 app.use((req, res, next) => {
